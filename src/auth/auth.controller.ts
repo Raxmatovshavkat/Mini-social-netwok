@@ -1,4 +1,15 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, UnauthorizedException, InternalServerErrorException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  UnauthorizedException,
+  InternalServerErrorException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { RegisterDto } from './dto/user-register.dto';
@@ -45,20 +56,29 @@ export class AuthController {
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiBody({ type: CreateRefreshTokenDto })
-  @ApiResponse({ status: 200, description: 'Access token refreshed successfully.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Access token refreshed successfully.',
+  })
   @ApiResponse({ status: 401, description: 'Invalid refresh token.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  async refreshAccessToken(@Body() refreshTokenDto: CreateRefreshTokenDto) {
+  async refreshAccessToken(@Body() createRefreshTokenDto: CreateRefreshTokenDto) {
+    console.log('Received DTO:', createRefreshTokenDto);
     try {
-      // console.log('Received refresh token DTO:', refreshTokenDto); // Debugging
-      const accessToken = await this.authService.refreshAccessToken(refreshTokenDto.token);
-      return { access_token: accessToken.accessToken };
+      const { token } = createRefreshTokenDto;
+      // console.log('Extracted token:', token);
+
+      if (!token) {
+        throw new UnauthorizedException('Refresh token must be provided');
+      }
+
+      const { accessToken } = await this.authService.refreshAccessToken(token);
+      return { access_token: accessToken };
     } catch (error) {
       console.error(`Refresh token error: ${error.message}`);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
-
 
 
   @Get('me/:id')
@@ -75,7 +95,7 @@ export class AuthController {
       throw new UnauthorizedException('User not found');
     }
   }
-  @Roles("admin")
+  @Roles('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('logout/:userId')
   @ApiOperation({ summary: 'Logout a user and remove refresh tokens' })

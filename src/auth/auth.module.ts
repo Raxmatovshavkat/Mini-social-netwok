@@ -7,7 +7,6 @@ import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from './Mail/mail.module';
 
-
 @Module({
   imports: [
     UserModule,
@@ -15,12 +14,10 @@ import { MailModule } from './Mail/mail.module';
     MailModule,
     OtpModule,
     JwtModule.register({
-      global:true
+      global: true,
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService
-  ],
+  providers: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

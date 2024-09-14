@@ -12,10 +12,13 @@ export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentsRepository: Repository<Comment>,
-  ) { }
+  ) {}
 
   // Create a new comment
-  async create(createCommentDto: CreateCommentDto, user: User): Promise<Comment> {
+  async create(
+    createCommentDto: CreateCommentDto,
+    user: User,
+  ): Promise<Comment> {
     const comment = this.commentsRepository.create({
       ...createCommentDto,
       user: user,
@@ -50,7 +53,10 @@ export class CommentsService {
   }
 
   // Update a comment
-  async update(id: string, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async update(
+    id: string,
+    updateCommentDto: UpdateCommentDto,
+  ): Promise<Comment> {
     const comment = await this.findOne(id);
     Object.assign(comment, updateCommentDto);
     return this.commentsRepository.save(comment);

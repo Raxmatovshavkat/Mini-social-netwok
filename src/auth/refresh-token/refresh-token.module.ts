@@ -9,11 +9,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([RefreshToken]),
-    JwtModule.register({}),
-  ],
+  imports: [TypeOrmModule.forFeature([RefreshToken]), JwtModule.register({})],
   providers: [RefreshTokenService],
   exports: [RefreshTokenService],
 })
-export class RefreshTokenModule { }
+export class RefreshTokenModule {}

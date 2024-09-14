@@ -10,10 +10,12 @@ async function bootstrap() {
   const port = process.env.DATABASE_PORT || 3000;
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
   const config = new DocumentBuilder()
     .setTitle('Clean service')
     .setDescription('The clean service API description')

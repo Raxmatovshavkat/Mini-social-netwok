@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Otp } from './entities/otp.entity';
@@ -9,10 +14,13 @@ export class OtpService {
   private readonly logger = new Logger(OtpService.name);
 
   constructor(
-    @InjectRepository(Otp) private readonly otpRepository: Repository<Otp>
-  ) { }
+    @InjectRepository(Otp) private readonly otpRepository: Repository<Otp>,
+  ) {}
 
-  async findOtpByUserIdAndOtp(userId: string, otp: string): Promise<Otp | null> {
+  async findOtpByUserIdAndOtp(
+    userId: string,
+    otp: string,
+  ): Promise<Otp | null> {
     if (!userId) {
       this.logger.error('userId is undefined');
       throw new Error('userId is undefined');

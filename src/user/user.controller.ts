@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,7 +17,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -17,7 +27,10 @@ export class UserController {
     try {
       return await this.userService.create(createUserDto);
     } catch (error) {
-      throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to create user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -33,13 +46,20 @@ export class UserController {
       }
       return users;
     } catch (error) {
-      throw new HttpException('Failed to retrieve users', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to retrieve users',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a user by ID' })
-  @ApiParam({ name: 'id', type: String, description: 'The ID of the user to retrieve' }) // Add this line
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'The ID of the user to retrieve',
+  }) // Add this line
   @ApiResponse({ status: 200, description: 'User retrieved successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async findOne(@Param('id') id: any) {
@@ -50,13 +70,20 @@ export class UserController {
       }
       return user;
     } catch (error) {
-      throw new HttpException('Failed to retrieve user', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to retrieve user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a user by ID' })
-  @ApiParam({ name: 'id', type: String, description: 'The ID of the user to update' }) // Add this line
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'The ID of the user to update',
+  }) // Add this line
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async update(@Param('id') id: any, @Body() updateUserDto: UpdateUserDto) {
@@ -67,13 +94,20 @@ export class UserController {
       }
       return updatedUser;
     } catch (error) {
-      throw new HttpException('Failed to update user', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to update user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user by ID' })
-  @ApiParam({ name: 'id', type: String, description: 'The ID of the user to delete' }) // Add this line
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'The ID of the user to delete',
+  }) // Add this line
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async remove(@Param('id') id: any) {
@@ -84,7 +118,10 @@ export class UserController {
       }
       return { message: 'User deleted successfully' };
     } catch (error) {
-      throw new HttpException('Failed to delete user', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to delete user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

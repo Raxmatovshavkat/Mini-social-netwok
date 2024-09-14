@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -12,15 +17,16 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
     const newUser = this.userRepository.create(createUserDto);
-    return await this.userRepository.save(newUser); // Ensure to await here
+    return await this.userRepository.save(newUser);
   }
 
   async signin(createLoginDto: LoginDto): Promise<User> {
     const { email, password } = createLoginDto;
     const user = await this.userRepository.findOne({ where: { email } });
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
