@@ -45,4 +45,12 @@ export class RegisterDto {
   @IsOptional()
   @IsEnum(['inactive', 'active'])
   status: 'inactive' | 'active';
+  @ApiProperty({
+    description: 'The role of the user',
+    example: 'admin',
+    enum: ['owner', 'supervisor', 'admin'],
+  })
+  @IsOptional()
+  @IsEnum(['owner', 'supervisor', 'admin'])
+  role: 'owner' | 'supervisor' | 'admin';
 }

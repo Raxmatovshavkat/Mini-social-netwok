@@ -12,7 +12,7 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postsRepository: Repository<Post>,
-  ) {}
+  ) { }
 
   async create(user: User, createPostDto: CreatePostDto): Promise<Post> {
     const post = this.postsRepository.create({
@@ -27,15 +27,25 @@ export class PostsService {
   }
 
   async findOne(id: string): Promise<Post> {
-    return this.postsRepository.findOne({ where: { id }, relations: ['user'] });
+    const post = await this.postsRepository.findOne({ where: { id }, relations: ['user'] });
+    if (!post) {
+      throw new Error('Post not found');
+    }
+    return post;
   }
 
   async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
-    await this.postsRepository.update(id, updatePostDto);
+    const result = await this.postsRepository.update(id, updatePostDto);
+    if (result.affected === 0) {
+      throw new Error('Post not found');
+    }
     return this.postsRepository.findOne({ where: { id } });
   }
 
   async delete(id: string): Promise<void> {
-    await this.postsRepository.delete(id);
+    const result = await this.postsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new Error('Post not found');
+    }
   }
 }

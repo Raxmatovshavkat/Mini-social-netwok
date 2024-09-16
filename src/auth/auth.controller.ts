@@ -32,8 +32,7 @@ export class AuthController {
     try {
       const user = await this.authService.register(createRegisterDto);
       return { message: 'User registered successfully', user };
-    } catch (error) {
-      console.error(`Registration error: ${error.message}`);
+    } catch {
       throw new InternalServerErrorException('Could not register user');
     }
   }
@@ -47,8 +46,7 @@ export class AuthController {
     try {
       const tokens = await this.authService.signIn(createLoginDto);
       return tokens;
-    } catch (error) {
-      console.error(`Login error: ${error.message}`);
+    } catch {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
@@ -56,30 +54,23 @@ export class AuthController {
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiBody({ type: CreateRefreshTokenDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Access token refreshed successfully.',
-  })
+  @ApiResponse({ status: 200, description: 'Access token refreshed successfully.' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   async refreshAccessToken(@Body() createRefreshTokenDto: CreateRefreshTokenDto) {
-    console.log('Received DTO:', createRefreshTokenDto);
+    const { token } = createRefreshTokenDto;
+
+    if (!token) {
+      throw new UnauthorizedException('Refresh token must be provided');
+    }
+
     try {
-      const { token } = createRefreshTokenDto;
-      // console.log('Extracted token:', token);
-
-      if (!token) {
-        throw new UnauthorizedException('Refresh token must be provided');
-      }
-
       const { accessToken } = await this.authService.refreshAccessToken(token);
       return { access_token: accessToken };
-    } catch (error) {
-      console.error(`Refresh token error: ${error.message}`);
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
-
 
   @Get('me/:id')
   @ApiOperation({ summary: 'Get current user by ID' })
@@ -90,11 +81,11 @@ export class AuthController {
     try {
       const user = await this.authService.me(id);
       return user;
-    } catch (error) {
-      console.error(`Fetch user error: ${error.message}`);
+    } catch {
       throw new UnauthorizedException('User not found');
     }
   }
+
   @Roles('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('logout/:userId')
@@ -105,8 +96,7 @@ export class AuthController {
     try {
       await this.authService.logout(userId);
       return { message: 'User logged out successfully' };
-    } catch (error) {
-      console.error(`Logout error: ${error.message}`);
+    } catch {
       throw new InternalServerErrorException('Could not logout user');
     }
   }
@@ -120,8 +110,7 @@ export class AuthController {
     try {
       await this.authService.verify(userId, otp);
       return { message: 'User verified successfully' };
-    } catch (error) {
-      console.error(`OTP verification error: ${error.message}`);
+    } catch {
       throw new UnauthorizedException('Invalid OTP');
     }
   }

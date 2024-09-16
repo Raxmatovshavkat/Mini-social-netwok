@@ -8,25 +8,25 @@ import {
   Body,
   Req,
   ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { Request } from 'express';
-import { User } from '../user/entities/user.entity'; // Import your User entity
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { User } from '../user/entities/user.entity';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Roles } from 'src/auth/guard/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
 
 @ApiTags('comments')
-@ApiBearerAuth() // Add this if you are using bearer token for authorization
 @Controller('comments')
+@Roles('admin', 'owner')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {}
+  constructor(private readonly commentsService: CommentsService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new comment' })
@@ -40,7 +40,7 @@ export class CommentsController {
     @Body() createCommentDto: CreateCommentDto,
     @Req() req: Request,
   ): Promise<Comment> {
-    const user = req.user as User; // Type assertion
+    const user = req.user as User;
     return this.commentsService.create(createCommentDto, user);
   }
 
@@ -82,12 +82,10 @@ export class CommentsController {
     @Body() updateCommentDto: UpdateCommentDto,
     @Req() req: Request,
   ): Promise<Comment> {
-    const user = req.user as User; // Type assertion
+    const user = req.user as User;
     const existingComment = await this.commentsService.findOne(id);
     if (existingComment.user.id !== user.id) {
-      throw new ForbiddenException(
-        'You are not allowed to update this comment',
-      );
+      throw new ForbiddenException('You are not allowed to update this comment');
     }
     return this.commentsService.update(id, updateCommentDto);
   }
@@ -101,12 +99,10 @@ export class CommentsController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Comment not found' })
   async remove(@Param('id') id: string, @Req() req: Request): Promise<void> {
-    const user = req.user as User; // Type assertion
+    const user = req.user as User;
     const existingComment = await this.commentsService.findOne(id);
     if (existingComment.user.id !== user.id) {
-      throw new ForbiddenException(
-        'You are not allowed to delete this comment',
-      );
+      throw new ForbiddenException('You are not allowed to delete this comment');
     }
     return this.commentsService.remove(id);
   }

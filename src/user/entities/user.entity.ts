@@ -37,7 +37,7 @@ export class User {
     enum: ['owner', 'supervisor', 'admin'],
     default: 'owner',
   })
-  role: 'owner' | 'supervisor' | 'admin';
+  role: string;
 
   @CreateDateColumn()
   created_at: Date;

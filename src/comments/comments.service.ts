@@ -12,35 +12,31 @@ export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentsRepository: Repository<Comment>,
-  ) {}
+  ) { }
 
-  // Create a new comment
   async create(
     createCommentDto: CreateCommentDto,
     user: User,
   ): Promise<Comment> {
     const comment = this.commentsRepository.create({
       ...createCommentDto,
-      user: user,
-      post: { id: createCommentDto.postId } as Post, // Ensure post is properly referenced
+      user,
+      post: { id: createCommentDto.postId } as Post,
     });
     return this.commentsRepository.save(comment);
   }
 
-  // Get all comments for a specific post
   async findAllForPost(postId: string): Promise<Comment[]> {
-    // Ensure you pass the postId in a correct format
     const whereCondition: FindOptionsWhere<Comment> = {
-      post: { id: postId } as Post, // Ensure post is properly referenced
+      post: { id: postId } as Post,
     };
 
     return this.commentsRepository.find({
       where: whereCondition,
-      relations: ['user'], // Include user if needed
+      relations: ['user'],
     });
   }
 
-  // Find one comment by ID
   async findOne(id: string): Promise<Comment> {
     const comment = await this.commentsRepository.findOne({
       where: { id },
@@ -52,7 +48,6 @@ export class CommentsService {
     return comment;
   }
 
-  // Update a comment
   async update(
     id: string,
     updateCommentDto: UpdateCommentDto,
@@ -62,7 +57,6 @@ export class CommentsService {
     return this.commentsRepository.save(comment);
   }
 
-  // Delete a comment
   async remove(id: string): Promise<void> {
     const comment = await this.findOne(id);
     await this.commentsRepository.remove(comment);

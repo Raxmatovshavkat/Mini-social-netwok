@@ -7,6 +7,7 @@ import {
   Get,
   Patch,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -17,14 +18,19 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { User } from 'src/user/entities/user.entity'; // Import User entity
-import { Request } from 'express'; // Import Express Request type
+import { User } from 'src/user/entities/user.entity';
+import { Request } from 'express';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/guard/roles.decorator';
 
 @ApiTags('posts')
-@ApiBearerAuth() // Add this if you are using bearer token for authorization
+@ApiBearerAuth()
+@Roles('admin', 'owner')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(private readonly postsService: PostsService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new post' })
@@ -36,9 +42,9 @@ export class PostsController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async create(
     @Body() createPostDto: CreatePostDto,
-    @Req() req: Request, // Include this to extract user from request
+    @Req() req: Request,
   ) {
-    const user = req.user as User; // Type assertion
+    const user = req.user as User;
     return this.postsService.create(user, createPostDto);
   }
 
@@ -73,7 +79,10 @@ export class PostsController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 404, description: 'Post not found' })
-  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
     return this.postsService.update(id, updatePostDto);
   }
 
