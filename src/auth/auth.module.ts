@@ -6,7 +6,7 @@ import { OtpModule } from './otp/otp.module';
 import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from './Mail/mail.module';
-import { EmailService } from './mail/mail.service';
+
 
 @Module({
   imports: [
@@ -19,6 +19,6 @@ import { EmailService } from './mail/mail.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService,EmailService],
+  providers: [AuthService],
 })
 export class AuthModule {}
